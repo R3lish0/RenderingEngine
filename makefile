@@ -1,8 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I./include -std=c++17 -o1 -I/opt/homebrew/Cellar/lua/5.4.7/include/lua
-LDFLAGS = -L/opt/homebrew/Cellar/lua/5.4.7/lib -llua
-
+CXXFLAGS = -I./include -std=c++17 -o1 -I/usr/include/lua.hpp
+LDFLAGS = -L/usr/local/lib -llua
 
 # Default source file
 SRC = ./src/main.cc
@@ -25,6 +24,8 @@ bench: $(TARGET)
 
 .PHONY: mac
 mac: CXX = g++-14
+mac: CXXFLAGS = -I./include -std=c++17 -o1 -I/opt/homebrew/Cellar/lua/5.4.7/include/lua
+mac: LDFLAGS = -L/opt/homebrew/Cellar/lua/5.4.7/lib -llua
 mac: $(TARGET)
 
 # Rule for compiling the object file for bench
