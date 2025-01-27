@@ -1,6 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I./include -std=c++17 -o1
+CXXFLAGS = -I./include -std=c++17 -o1 -I/opt/homebrew/Cellar/lua/5.4.7/include/lua
+LDFLAGS = -L/opt/homebrew/Cellar/lua/5.4.7/lib -llua
 
 
 # Default source file
@@ -11,7 +12,7 @@ TARGET = ./make/output
 
 # Rule for building the target
 $(TARGET): main.o
-	$(CXX) ./make/main.o -o $(TARGET)
+	$(CXX) ./make/main.o $(LDFLAGS) -o $(TARGET)
 
 # Rule for compiling the object file
 main.o: $(SRC) ./include/rtweekend.h
