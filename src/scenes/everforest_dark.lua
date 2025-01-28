@@ -3,9 +3,9 @@ local M = {}
 function M.setup()
     -- Scene Settings
     SceneSettings = {
-        aspect_ratio = 3440/1440, -- Ultrawide 21:9
+        aspect_ratio = 2, -- Ultrawide 21:9
         image_width = 360,
-        samples_per_pixel = 500,
+        samples_per_pixel = 50,
         max_depth = 25,
         vfov = 40,
         lookfrom = {-4, 2, 25},  -- Moved closer, 2 steps left
@@ -26,7 +26,7 @@ function M.setup()
     local glow = {"diffuse_light", {0.918, 0.682, 0.341}, 0.4} -- Brighter fireflies
     local ambient_light = {"diffuse_light", {0.557, 0.631, 0.631}, 0.1}
     local sunlight = {"diffuse_light", {1.0, 0.95, 0.9}, 3.0}  -- Much brighter sun
-    local backlight = {"diffuse_light", {15, 15, 15}, 150}  -- Much brighter backlight
+    local backlight = {"diffuse_light", {7, 7, 7}, 50}  -- Much brighter backlight
 
     -- Add materials to global table
     table.insert(Materials, {"forest_ground", table.unpack(forest_ground)})

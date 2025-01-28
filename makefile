@@ -1,7 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I./include -std=c++17 -O3 -I/usr/include/lua.hpp
-LDFLAGS = -L/usr/local/lib -llua
+#CXXFLAGS = -I./include -std=c++17 -O3 -I/usr/include/lua.hpp
+#LDFLAGS = -L/usr/local/lib -llua
 
 # Default source file
 SRC = ./src/main.cc
@@ -22,10 +22,16 @@ main.o: $(SRC) ./include/rtweekend.h
 bench: SRC = ./src/bench.cc
 bench: $(TARGET)
 
-.PHONY: mac
+.PHONY: mac_ss
 mac: CXX = g++-14
-mac: CXXFLAGS = -I./include -std=c++17 -o1 -I/opt/homebrew/Cellar/lua/5.4.7/include/lua
-mac: LDFLAGS = -L/opt/homebrew/Cellar/lua/5.4.7/lib -llua
+mac: CXXFLAGS = -I./include -std=c++17 -o3 -I/usr/local/Cellar/lua/5.4.7/include/lua
+mac: LDFLAGS = -L/usr/local/Cellar/lua/5.4.7/lib -llua
+mac: $(TARGET)
+
+.PHONY: mac_p
+mac: CXX = g++-14
+mac: CXXFLAGS = -I./include -std=c++17 -o3 -I/usr/homebrew/Cellar/lua/5.4.7/include/lua
+mac: LDFLAGS = -L/usr/homebrew/Cellar/lua/5.4.7/lib -llua
 mac: $(TARGET)
 
 # Rule for compiling the object file for bench
