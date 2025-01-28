@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I./include -std=c++17 -o1 -I/usr/include/lua.hpp
+CXXFLAGS = -I./include -std=c++17 -O3 -I/usr/include/lua.hpp
 LDFLAGS = -L/usr/local/lib -llua
 
 # Default source file
