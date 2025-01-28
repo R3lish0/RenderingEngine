@@ -162,17 +162,16 @@ function M.setup()
         table.insert(Lights, {"sphere", pos, 0.5})
     end
 
-    -- Add bright backlight behind camera
-    table.insert(Objects, {"quad",
-        {-10, 8, 30},  -- Position behind and above camera
-        {20, 0, 0},    -- Width
-        {0, 20, 0},    -- Height (vertical quad this time)
+    -- Add bright backlight directly behind camera
+    local camera_pos = {-4, 2, 25}  -- Match camera position
+    table.insert(Objects, {"sphere",
+        {camera_pos[1], camera_pos[2], camera_pos[3] + 8},  -- Moved further behind camera
+        2.0,  -- Smaller radius
         "backlight"
     })
-    table.insert(Lights, {"quad",
-        {-10, 8, 30},
-        {20, 0, 0},
-        {0, 20, 0}
+    table.insert(Lights, {"sphere",
+        {camera_pos[1], camera_pos[2], camera_pos[3] + 8},
+        2.0
     })
 end
 
