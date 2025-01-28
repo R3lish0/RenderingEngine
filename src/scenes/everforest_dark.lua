@@ -3,8 +3,8 @@ local M = {}
 function M.setup()
     -- Scene Settings
     SceneSettings = {
-        aspect_ratio = 21/9, -- Ultrawide 21:9
-        image_width = 500,
+        aspect_ratio = 3456/2234, -- Ultrawide 21:9
+        image_width = 3456,
         samples_per_pixel = 1000,
         max_depth = 25,
         vfov = 40,
