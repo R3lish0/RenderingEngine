@@ -62,8 +62,19 @@ shared_ptr<material> create_material_from_lua(lua_State* L, int material_idx) {
         lua_pop(L, 1);
         return make_shared<diffuse_light>(emit);
     }
+    else if (mat_type == "lambertian") {
+        lua_rawgeti(L, -1, 3); // Get color table
+        color albedo;
+        for (int i = 1; i <= 3; i++) {
+            lua_rawgeti(L, -1, i);
+            albedo[i-1] = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+        }
+        lua_pop(L, 1);
+        return make_shared<lambertian>(albedo);
+    }
     
-    // Default to lambertian if type not recognized
+    // Default to grey lambertian if type not recognized
     return make_shared<lambertian>(color(0.5, 0.5, 0.5));
 }
 

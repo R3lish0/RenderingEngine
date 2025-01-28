@@ -3,9 +3,9 @@ local M = {}
 function M.setup()
     -- Scene Settings
     SceneSettings = {
-        aspect_ratio = 2, -- Ultrawide 21:9
-        image_width = 360,
-        samples_per_pixel = 50,
+        aspect_ratio = 21/9, -- Ultrawide 21:9
+        image_width = 300,
+        samples_per_pixel = 1000,
         max_depth = 25,
         vfov = 40,
         lookfrom = {-4, 2, 25},  -- Moved closer, 2 steps left
@@ -13,20 +13,18 @@ function M.setup()
         vup = {0, 1, 0},
         defocus_angle = 0.3,
         focus_dist = 25.0,       -- Adjusted focus for closer camera
-        background = {0.235, 0.175, 0.131} -- Darker sunset color
+        background = {0.01, 0.02, 0.04} -- Very dark blue instead of pure black
     }
     
     -- Everforest Materials
-    local forest_ground = {"lambertian", {0.475, 0.518, 0.357}} -- Much more vibrant grass
-    local bark = {"lambertian", {0.435, 0.365, 0.325}}  -- Slightly warmer bark
-    local leaves = {"lambertian", {0.557, 0.631, 0.431}}  -- Even more vibrant green
-    local water = {"dielectric", 1.33} -- Pure water
-    local river_bottom = {"lambertian", {0.357, 0.631, 0.702}} -- Blue river bottom
+    local forest_ground = {"lambertian", {0.3, 0.6, 0.2}} -- Natural green
+    local bark = {"lambertian", {0.6, 0.3, 0.2}}  -- Reddish-brown bark
+    local leaves = {"lambertian", {0.2, 0.5, 0.1}}  -- Forest green
+    local water = {"dielectric", 1.33} -- Keep water same
+    local river_bottom = {"metal", {0.2, 0.3, 0.7}, 0.6} -- Smoother metallic blue
     local glass = {"dielectric", 1.5}
-    local glow = {"diffuse_light", {0.918, 0.682, 0.341}, 0.4} -- Brighter fireflies
-    local ambient_light = {"diffuse_light", {0.557, 0.631, 0.631}, 0.1}
-    local sunlight = {"diffuse_light", {1.0, 0.95, 0.9}, 3.0}  -- Much brighter sun
-    local backlight = {"diffuse_light", {7, 7, 7}, 50}  -- Much brighter backlight
+    local glow = {"diffuse_light", {20.0, 16.0, 10.0}, 0.8} -- Keep firefly brightness
+    local sunset = {"diffuse_light", {15.0, 7.5, 4.0}, 2.0}  -- Reduced sunset intensity significantly
 
     -- Add materials to global table
     table.insert(Materials, {"forest_ground", table.unpack(forest_ground)})
@@ -36,9 +34,7 @@ function M.setup()
     table.insert(Materials, {"river_bottom", table.unpack(river_bottom)})
     table.insert(Materials, {"glass", table.unpack(glass)})
     table.insert(Materials, {"glow", table.unpack(glow)})
-    table.insert(Materials, {"ambient_light", table.unpack(ambient_light)})
-    table.insert(Materials, {"sunlight", table.unpack(sunlight)})
-    table.insert(Materials, {"backlight", table.unpack(backlight)})
+    table.insert(Materials, {"sunset", table.unpack(sunset)})
 
     -- Ground plane
     table.insert(Objects, {"quad", {-50, 0, -50}, {100, 0, 0}, {0, 0, 100}, "forest_ground"})
@@ -51,7 +47,7 @@ function M.setup()
             {x + trunk_radius, height, z + trunk_radius},
             "bark"})
         
-        -- Foliage (multiple layers of leaves)
+        -- Foliage (multiple layers of lenaves)
         local leaf_layers = 3
         for i = 1, leaf_layers do
             local y = height - (i * 0.5)
@@ -100,23 +96,10 @@ function M.setup()
             {river_width * 2, 0, 0},
             {0, 0, 100/river_segments + 0.1},
             "river_bottom"})
-        
-        -- Create box for water
-        table.insert(Objects, {"box",
-            {x_offset - river_width, -river_depth, z},  -- Bottom corner
-            {x_offset + river_width, 0.1, z + 100/river_segments + 0.1},  -- Top corner, slightly above ground
-            "water"})
     end
 
-    -- Split ground into two parts to make space for river
-    table.insert(Objects, {"quad", 
-        {-50, 0, -50}, 
-        {100, 0, 0}, 
-        {0, 0, 100}, 
-        "forest_ground"})
-
-    -- Add fireflies (more numerous, random distribution)
-    local num_fireflies = 80  -- Reduced from 200
+    -- Add fireflies (increased number for more illumination)
+    local num_fireflies = 150  -- Increased from 80 for more light coverage
     for i = 1, num_fireflies do
         -- Random position within the forest area
         local angle = math.random() * math.pi * 2
@@ -129,49 +112,24 @@ function M.setup()
         x = x + math.sin(i * 0.7) * 2.0
         z = z + math.cos(i * 0.7) * 2.0
         
-        -- Smaller fireflies with subtle glow
-        local size = 0.15 + math.random() * 0.1  -- Random size variation
+        -- Made fireflies slightly larger for more illumination
+        local size = 0.25 + math.random() * 0.15
         table.insert(Objects, {"sphere", {x, y, z}, size, "glass"})
-        table.insert(Objects, {"sphere", {x, y, z}, size * 0.5, "glow"})
-        table.insert(Lights, {"sphere", {x, y, z}, size * 0.5})
+        table.insert(Objects, {"sphere", {x, y, z}, size * 0.6, "glow"})
+        table.insert(Lights, {"sphere", {x, y, z}, size * 0.6})
     end
 
-    -- Add main sun light
-    table.insert(Objects, {"quad",
-        {-15, 15, -15},  -- Position for sunset-like angle
-        {30, 0, 0},      -- Width
-        {0, 0, 30},      -- Depth
-        "sunlight"
-    })
-    table.insert(Lights, {"quad",
-        {-15, 15, -15},
-        {30, 0, 0},
-        {0, 0, 30}
-    })
-
-    -- Add subtle ambient lights at corners of scene
-    local corners = {
-        {-20, 1, -20},
-        {-20, 1, 20},
-        {20, 1, -20},
-        {20, 1, 20}
-    }
-    
-    for _, pos in ipairs(corners) do
-        table.insert(Objects, {"sphere", pos, 0.5, "ambient_light"})
-        table.insert(Lights, {"sphere", pos, 0.5})
-    end
-
-    -- Add bright backlight directly behind camera
-    local camera_pos = {-4, 2, 25}  -- Match camera position
+    -- Add warm sunset light far in front of camera
+    local sun_distance = -30
+    local sun_height = 4
     table.insert(Objects, {"sphere",
-        {camera_pos[1], camera_pos[2], camera_pos[3] + 8},  -- Moved further behind camera
-        2.0,  -- Smaller radius
-        "backlight"
+        {2, sun_height, sun_distance},
+        8.0,
+        "sunset"
     })
     table.insert(Lights, {"sphere",
-        {camera_pos[1], camera_pos[2], camera_pos[3] + 8},
-        2.0
+        {2, sun_height, sun_distance},
+        8.0
     })
 end
 
