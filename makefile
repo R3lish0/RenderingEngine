@@ -22,17 +22,17 @@ main.o: $(SRC) ./include/rtweekend.h
 bench: SRC = ./src/bench.cc
 bench: $(TARGET)
 
-.PHONY: mac_ss
-mac: CXX = g++-14
-mac: CXXFLAGS = -I./include -std=c++17 -o3 -I/usr/local/Cellar/lua/5.4.7/include/lua
-mac: LDFLAGS = -L/usr/local/Cellar/lua/5.4.7/lib -llua
-mac: $(TARGET)
+.PHONY: mac_s
+mac_s: CXX = g++-14
+mac_s: CXXFLAGS = -I./include -std=c++17 -o3 -I/usr/local/Cellar/lua/5.4.7/include/lua
+mac_s: LDFLAGS = -L/usr/local/Cellar/lua/5.4.7/lib -llua
+mac_s: $(TARGET)
 
 .PHONY: mac_p
-mac: CXX = g++-14
-mac: CXXFLAGS = -I./include -std=c++17 -o3 -I/usr/homebrew/Cellar/lua/5.4.7/include/lua
-mac: LDFLAGS = -L/usr/homebrew/Cellar/lua/5.4.7/lib -llua
-mac: $(TARGET)
+mac_p: CXX = g++-14
+mac_p: CXXFLAGS = -I./include -std=c++17 -o3 -I/opt/homebrew/Cellar/lua/5.4.7/include/lua
+mac_p: LDFLAGS = -L/opt/homebrew/Cellar/lua/5.4.7/lib -llua
+mac_p: $(TARGET)
 
 # Rule for compiling the object file for bench
 bench.o: $(SRC) ./include/rtweekend.h

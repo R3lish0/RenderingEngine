@@ -221,45 +221,54 @@ class camera {
 
 
         color ray_color(const ray& r, int depth, const hittable& world, const hittable& lights) const {
-
-            if(depth <= 0)
-                return color(0,0,0);
-
-            hit_record rec;
+            ray current_ray = r;
+            color final_color(0,0,0);
+            color attenuation(1,1,1);
             
-            // If the ray hits nothing, return the background color immediately
-            if (!world.hit(r, interval(0.001, infinity), rec))
-                return background;
+            for (int current_depth = depth; current_depth > 0; current_depth--) {
+                hit_record rec;
+                
+                if (!world.hit(current_ray, interval(0.001, infinity), rec)) {
+                    final_color += attenuation * background;
+                    break;
+                }
 
-            scatter_record srec;
-            color color_from_emission = rec.mat->emitted(r, rec, rec.u, rec.v, rec.p);
+                scatter_record srec;
+                color emission = rec.mat->emitted(current_ray, rec, rec.u, rec.v, rec.p);
+                final_color += attenuation * emission;
 
-            if (!rec.mat->scatter(r, rec, srec))
-                return color_from_emission;
-            
-            if (srec.skip_pdf) {
-                return srec.attenuation * ray_color(srec.skip_pdf_ray, depth-1, world, lights);
+                if (!rec.mat->scatter(current_ray, rec, srec)) {
+                    break;
+                }
+                
+                if (srec.skip_pdf) {
+                    current_ray = srec.skip_pdf_ray;
+                    attenuation = color(attenuation[0] * srec.attenuation[0],
+                                     attenuation[1] * srec.attenuation[1],
+                                     attenuation[2] * srec.attenuation[2]);
+                    continue;
+                }
+
+                // Create light PDF with current hit point
+                auto light_pdf = make_shared<hittable_pdf>(lights, rec.p);
+                mixture_pdf p(light_pdf, srec.pdf_ptr);
+
+                ray scattered = ray(rec.p, p.generate(), current_ray.time());
+                auto pdf_value = p.value(scattered.direction());
+                double scattering_pdf = rec.mat->scattering_pdf(current_ray, rec, scattered);
+
+                if (pdf_value < 0.00001 || scattering_pdf < 0.00001) {
+                    break;
+                }
+
+                color scale = (srec.attenuation * scattering_pdf) / pdf_value;
+                attenuation = color(attenuation[0] * scale[0],
+                                  attenuation[1] * scale[1],
+                                  attenuation[2] * scale[2]);
+                current_ray = scattered;
             }
 
-            auto light_ptr = make_shared<hittable_pdf>(lights, rec.p);
-            mixture_pdf p(light_ptr, srec.pdf_ptr);
-
-            ray scattered = ray(rec.p, p.generate(), r.time());
-            auto pdf_value = p.value(scattered.direction());
-
-
-            double scattering_pdf = rec.mat->scattering_pdf(r, rec, scattered);
-
-            // Skip extremely low contribution paths
-            if (pdf_value < 0.00001 || scattering_pdf < 0.00001) {
-                return color_from_emission;
-            }
-
-            color sample_color = ray_color(scattered, depth-1, world, lights);
-            
-            color color_from_scatter = (srec.attenuation * scattering_pdf * sample_color) / pdf_value;
-
-            return color_from_emission + color_from_scatter;
+            return final_color;
         }
 };
 
