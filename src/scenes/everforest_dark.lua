@@ -3,9 +3,9 @@ local M = {}
 function M.setup()
     -- Scene Settings
     SceneSettings = {
-        aspect_ratio = 3456/2234, -- Ultrawide 21:9
+        aspect_ratio = 3456/2234, 
         image_width = 1000,
-        samples_per_pixel = 1,
+        samples_per_pixel = 100,
         max_depth = 25,
         vfov = 40,
         lookfrom = {-4, 2, 25},  -- Moved closer, 2 steps left
