@@ -97,13 +97,18 @@ class camera {
                     }
                 }
 
-                // Use faster addition method
+
+                //this will be reading from an output GPU buffer
+                //so we are actually pretty close to what we already need here
                 for (int sample = 0; sample < samples; sample++) {
                     pixel_color += color_arr[sample];
                 }
 
                 // Use pre-calculated inverse instead of multiplication
                 pixel_color *= inv_samples;
+                
+                
+                //this is actually really close to what we need
                 output[j][i] = write_color(pixel_color);
             }
             

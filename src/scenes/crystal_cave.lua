@@ -8,8 +8,8 @@ function M.setup()
     -- Scene Settings
     SceneSettings = {
         aspect_ratio = 3456/2234,
-        image_width = 600,
-        samples_per_pixel = 10,
+        image_width = 1,
+        samples_per_pixel = 1,
         max_depth = 25,
         vfov = 80,
         lookfrom = {0, 3, 25},    -- Moved back and up more

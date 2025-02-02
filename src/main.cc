@@ -1,3 +1,12 @@
+#define NS_PRIVATE_IMPLEMENTATION
+#define CA_PRIVATE_IMPLEMENTATION
+#define MTL_PRIVATE_IMPLEMENTATION
+#include <Foundation/Foundation.hpp>
+#include <Metal/Metal.hpp>
+#include <QuartzCore/QuartzCore.hpp>
+
+
+
 #include "../include/rtweekend.h"
 
 #include "../include/hittable_list.h"
@@ -361,6 +370,16 @@ void initialize_lua(const char* scene_name) {
 }
 
 int main(int argc, char* argv[]) {
+
+    MTL::Device* device = MTL::CreateSystemDefaultDevice(); 
+
+    if (!device) {
+        std::cerr << "Failed to create Metal device. \n\n" << std::endl;
+        return 1;
+    }
+
+    std::cout << "Metal device created: " << device->name()->utf8String() << "\n\n" << std::endl;
+
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <scene_name>" << std::endl;
         return 1;
@@ -372,6 +391,8 @@ int main(int argc, char* argv[]) {
         std::cerr << "Lua initialization error: " << e.what() << std::endl;
         return 1;
     }
+
+    device->release();
 
     return 0;
 }
